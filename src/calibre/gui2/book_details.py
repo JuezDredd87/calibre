@@ -2,7 +2,8 @@
 # vim:fileencoding=UTF-8:ts=4:sw=4:sta:et:sts=4:ai
 # License: GPLv3 Copyright: 2010, Kovid Goyal <kovid at kovidgoyal.net>
 
-import cPickle, re
+import cPickle
+import re
 from binascii import unhexlify
 from collections import namedtuple
 from functools import partial
@@ -23,8 +24,8 @@ from calibre.ebooks.metadata.search_internet import (
     url_for_book_search
 )
 from calibre.gui2 import (
-    NO_URL_FORMATTING, config, default_author_link, gprefs, open_url, pixmap_to_data,
-    rating_font
+    NO_URL_FORMATTING, choose_save_file, config, default_author_link, gprefs,
+    open_url, pixmap_to_data, rating_font
 )
 from calibre.gui2.dnd import (
     dnd_get_files, dnd_get_image, dnd_has_extension, dnd_has_image, image_extensions
@@ -86,9 +87,14 @@ def init_manage_action(ac, field, value):
     return ac
 
 
-def render_html(mi, css, vertical, widget, all_fields=False, render_data_func=None):  # {{{
-    table, comment_fields = (render_data_func or render_data)(mi, all_fields=all_fields,
-            use_roman_numbers=config['use_roman_numerals_for_series_number'])
+def render_html(mi, css, vertical, widget, all_fields=False, render_data_func=None, pref_name='book_display_fields'):  # {{{
+    func = render_data_func or render_data
+    try:
+        table, comment_fields = func(mi, all_fields=all_fields,
+                use_roman_numbers=config['use_roman_numerals_for_series_number'], pref_name=pref_name)
+    except TypeError:
+        table, comment_fields = func(mi, all_fields=all_fields,
+                use_roman_numbers=config['use_roman_numerals_for_series_number'])
 
     def color_to_string(col):
         ans = '#000000'
@@ -144,29 +150,27 @@ def render_html(mi, css, vertical, widget, all_fields=False, render_data_func=No
     return ans
 
 
-def get_field_list(fm, use_defaults=False):
+def get_field_list(fm, use_defaults=False, pref_name='book_display_fields'):
     from calibre.gui2.ui import get_gui
     db = get_gui().current_db
     if use_defaults:
         src = db.prefs.defaults
     else:
-        old_val = gprefs.get('book_display_fields', None)
-        if old_val is not None and not db.prefs.has_setting(
-                'book_display_fields'):
+        old_val = gprefs.get(pref_name, None)
+        if old_val is not None and not db.prefs.has_setting(pref_name):
             src = gprefs
         else:
             src = db.prefs
-    fieldlist = list(src['book_display_fields'])
-    names = frozenset([x[0] for x in fieldlist])
-    for field in fm.displayable_field_keys():
-        if field not in names:
-            fieldlist.append((field, True))
+    fieldlist = list(src[pref_name])
+    names = frozenset(x[0] for x in fieldlist)
     available = frozenset(fm.displayable_field_keys())
+    for field in available - names:
+        fieldlist.append((field, True))
     return [(f, d) for f, d in fieldlist if f in available]
 
 
-def render_data(mi, use_roman_numbers=True, all_fields=False):
-    field_list = get_field_list(getattr(mi, 'field_metadata', field_metadata))
+def render_data(mi, use_roman_numbers=True, all_fields=False, pref_name='book_display_fields'):
+    field_list = get_field_list(getattr(mi, 'field_metadata', field_metadata), pref_name=pref_name)
     field_list = [(x, all_fields or display) for x, display in field_list]
     return mi_to_html(mi, field_list=field_list, use_roman_numbers=use_roman_numbers, rtl=is_rtl(),
                       rating_font=rating_font(), default_author_link=default_author_link())
@@ -393,6 +397,7 @@ class CoverView(QWidget):  # {{{
         cm = QMenu(self)
         paste = cm.addAction(_('Paste cover'))
         copy = cm.addAction(_('Copy cover'))
+        save = cm.addAction(_('Save cover to disk'))
         remove = cm.addAction(_('Remove cover'))
         gc = cm.addAction(_('Generate cover from metadata'))
         cm.addSeparator()
@@ -402,6 +407,7 @@ class CoverView(QWidget):  # {{{
         paste.triggered.connect(self.paste_from_clipboard)
         remove.triggered.connect(self.remove_cover)
         gc.triggered.connect(self.generate_cover)
+        save.triggered.connect(self.save_cover)
 
         m = QMenu(_('Open cover with...'))
         populate_menu(m, self.open_with, 'cover_image')
@@ -439,6 +445,18 @@ class CoverView(QWidget):  # {{{
                 pmap = cb.pixmap(cb.Selection)
         if not pmap.isNull():
             self.update_cover(pmap)
+
+    def save_cover(self):
+        from calibre.gui2.ui import get_gui
+        book_id = self.data.get('id')
+        db = get_gui().current_db.new_api
+        path = choose_save_file(
+            self, 'save-cover-from-book-details', _('Choose cover save location'),
+            filters=[(_('JPEG images'), ['jpg', 'jpeg'])], all_files=False,
+            initial_filename='{}.jpeg'.format(db.field_for('title', book_id, default_value='cover'))
+        )
+        if path:
+            db.copy_cover_to(book_id, path)
 
     def update_cover(self, pmap=None, cdata=None):
         if pmap is None:

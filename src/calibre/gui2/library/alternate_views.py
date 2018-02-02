@@ -23,6 +23,7 @@ from PyQt5.Qt import (
 
 from calibre import fit_image, prints, prepare_string_for_xml, human_readable
 from calibre.constants import DEBUG, config_dir, islinux
+from calibre.gui2.pin_columns import PinContainer
 from calibre.ebooks.metadata import fmt_sidx, rating_to_stars
 from calibre.utils import join_with_timeout
 from calibre.gui2 import gprefs, config, rating_font, empty_index
@@ -40,6 +41,32 @@ def auto_height(widget):
 
 class EncodeError(ValueError):
     pass
+
+
+def handle_enter_press(self, ev, special_action=None, has_edit_cell=True):
+    if ev.key() in (Qt.Key_Enter, Qt.Key_Return):
+        mods = ev.modifiers()
+        if mods & Qt.CTRL or mods & Qt.ALT or mods & Qt.SHIFT or mods & Qt.META:
+            return
+        if self.state() != self.EditingState and self.hasFocus() and self.currentIndex().isValid():
+            from calibre.gui2.ui import get_gui
+            ev.ignore()
+            tweak = tweaks['enter_key_behavior']
+            gui = get_gui()
+            if tweak == 'edit_cell':
+                if has_edit_cell:
+                    self.edit(self.currentIndex(), self.EditKeyPressed, ev)
+                else:
+                    gui.iactions['Edit Metadata'].edit_metadata(False)
+            elif tweak == 'edit_metadata':
+                gui.iactions['Edit Metadata'].edit_metadata(False)
+            elif tweak == 'do_nothing':
+                pass
+            else:
+                if special_action is not None:
+                    special_action(self.currentIndex())
+                gui.iactions['View'].view_triggered(self.currentIndex())
+            return True
 
 
 def image_to_data(image):  # {{{
@@ -250,7 +277,9 @@ class AlternateViews(object):
 
     def set_stack(self, stack):
         self.stack = stack
-        self.stack.addWidget(self.main_view)
+        pin_container = PinContainer(self.main_view, stack)
+        self.stack.addWidget(pin_container)
+        return pin_container
 
     def add_view(self, key, view):
         self.views[key] = view
@@ -714,11 +743,14 @@ class GridView(QListView):
         for r in xrange(self.first_visible_row or 0, self.last_visible_row or (m.count() - 1)):
             self.update(m.index(r, 0))
 
-    def double_clicked(self, index):
+    def start_view_animation(self, index):
         d = self.delegate
         if d.animating is None and not config['disable_animations']:
             d.animating = index
             d.animation.start()
+
+    def double_clicked(self, index):
+        self.start_view_animation(index)
         if tweaks['doubleclick_on_library_view'] == 'open_viewer':
             self.gui.iactions['View'].view_triggered(index)
         elif tweaks['doubleclick_on_library_view'] in {'edit_metadata', 'edit_cell'}:
@@ -1000,6 +1032,8 @@ class GridView(QListView):
         return self._ncols
 
     def keyPressEvent(self, ev):
+        if handle_enter_press(self, ev, self.start_view_animation, False):
+            return
         k = ev.key()
         if ev.modifiers() & Qt.ShiftModifier and k in (Qt.Key_Left, Qt.Key_Right, Qt.Key_Up, Qt.Key_Down):
             ci = self.currentIndex()

@@ -16,7 +16,7 @@ from PyQt5.Qt import (
 
 from calibre import prints, isbytestring
 from calibre.constants import cache_dir, iswindows
-from calibre.ptempfile import PersistentTemporaryDirectory, TemporaryDirectory
+from calibre.ptempfile import TemporaryDirectory
 from calibre.ebooks.oeb.base import urlnormalize
 from calibre.ebooks.oeb.polish.main import SUPPORTED, tweak_polish
 from calibre.ebooks.oeb.polish.container import get_container as _gc, clone_container, guess_type, OEB_DOCS, OEB_STYLES
@@ -49,6 +49,7 @@ from calibre.gui2.tweak_book.widgets import (
 from calibre.utils.config import JSONConfig
 from calibre.utils.icu import numeric_sort_key
 from calibre.utils.imghdr import identify
+from calibre.utils.tdir_in_cache import tdir_in_cache
 
 _diff_dialogs = []
 last_used_transform_rules = []
@@ -296,7 +297,9 @@ class Boss(QObject):
         self.container_count = -1
         if self.tdir:
             shutil.rmtree(self.tdir, ignore_errors=True)
-        self.tdir = PersistentTemporaryDirectory()
+        # We use the cache dir rather than the temporary dir to try and prevent
+        # temp file cleaners from nuking ebooks. See https://bugs.launchpad.net/bugs/1740460
+        self.tdir = tdir_in_cache('ee')
         self._edit_file_on_open = edit_file
         self._clear_notify_data = clear_notify_data
         self.gui.blocking_job('open_book', _('Opening book, please wait...'), self.book_opened, get_container, path, tdir=self.mkdtemp())
@@ -433,7 +436,7 @@ class Boss(QObject):
         completion_worker().clear_caches('names')
 
     def add_file(self):
-        if not self.ensure_book(_('You must first open a book to tweak, before trying to create new files in it.')):
+        if not self.ensure_book(_('You must first open a book to edit, before trying to create new files in it.')):
             return
         self.commit_dirty_opf()
         d = NewFileDialog(self.gui)
@@ -448,8 +451,11 @@ class Boss(QObject):
         self.add_savepoint(_('Before: Add file %s') % self.gui.elided_text(file_name))
         c = current_container()
         adata = data.replace(b'%CURSOR%', b'') if using_template else data
+        spine_index = c.index_in_spine(self.currently_editing or '')
+        if spine_index is not None:
+            spine_index += 1
         try:
-            added_name = c.add_file(file_name, adata)
+            added_name = c.add_file(file_name, adata, spine_index=spine_index)
         except:
             self.rewind_savepoint()
             raise
@@ -469,7 +475,7 @@ class Boss(QObject):
         return added_name
 
     def add_files(self):
-        if not self.ensure_book(_('You must first open a book to tweak, before trying to create new files in it.')):
+        if not self.ensure_book(_('You must first open a book to edit, before trying to create new files in it.')):
             return
 
         files = choose_files(self.gui, 'tweak-book-bulk-import-files', _('Choose files'))

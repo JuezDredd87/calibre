@@ -32,6 +32,9 @@ class AssociatedPress(BasicNewsRecipe):
         dict(id="byLine"),
         dict(id=lambda x: x and x.startswith('storyBodyDiv')),
     ]
+    remove_tags = [
+        dict(id='ppPhoto ppPhoto1'.split()),
+    ]
 
     def parse_index(self):
         feeds = []
@@ -61,7 +64,7 @@ class AssociatedPress(BasicNewsRecipe):
         for card in cards:
             for article in card['contents']:
                 url = article['localLinkUrl']
-                title = article.get('flattenedFirstWords')
+                title = article.get('headline', article.get('flattenedFirstWords'))
                 if not title:
                     continue
                 title = title.split('\u2014')[-1]

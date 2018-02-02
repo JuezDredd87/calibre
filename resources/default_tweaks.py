@@ -393,7 +393,7 @@ sort_dates_using_visible_fields = False
 cover_trim_fuzz_value = 10
 
 #: Control behavior of the book list
-# You can control the behavior of double clicks on the books list.
+# You can control the behavior of double clicks and pressing enter on the books list.
 # Choices: open_viewer, do_nothing,
 # edit_cell, edit_metadata. Selecting anything other than open_viewer has the
 # side effect of disabling editing a field using a single click.
@@ -402,6 +402,7 @@ cover_trim_fuzz_value = 10
 # You can also control whether the book list scrolls horizontal per column or
 # per pixel. Default is per column.
 doubleclick_on_library_view = 'open_viewer'
+enter_key_behavior = 'do_nothing'
 horizontal_scrolling_per_column = True
 
 #: Language to use when sorting
@@ -425,7 +426,7 @@ metadata_single_use_2_cols_for_custom_fields = True
 #: Order of custom column(s) in edit metadata
 # Controls the order that custom columns are listed in edit metadata single
 # and bulk. The columns listed in the tweak are displayed first and in the
-# order provided. Any columns not listed are dislayed after the listed ones,
+# order provided. Any columns not listed are displayed after the listed ones,
 # in alphabetical order. Do note that this tweak does not change the size of
 # the edit widgets. Putting comments widgets in this list may result in some
 # odd widget spacing when using two-column mode.
@@ -555,7 +556,14 @@ content_server_thumbnail_compression_quality = 75
 cover_drop_exclude = ()
 
 #: Show the Saved searches box in the Search bar
-# In newer versions of calibre, only a button that allows you to add a new Saved
-# search is shown in the Search bar. If you would like to have the old
-# Saved searches box with its two buttons back, set this tweak to True.
+# In newer versions of calibre, only a single button that allows you to add a
+# new Saved search is shown in the Search bar. If you would like to have the
+# old Saved searches box with its two buttons back, set this tweak to True.
 show_saved_search_box = False
+
+#: Exclude fields when copy/pasting metadata
+# You can ask calibre to not paste some metadata fields when using the
+# Edit metadata->Copy metadata/Paste metadata actions. For example,
+# exclude_fields_on_paste = ['cover', 'timestamp', '#mycolumn']
+# to prevent pasting of the cover, Date and custom column, mycolumn.
+exclude_fields_on_paste = []

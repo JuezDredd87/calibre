@@ -744,6 +744,14 @@ class Container(ContainerBase):  # {{{
         for item, name in non_linear:
             yield item, name, False
 
+    def index_in_spine(self, name):
+        manifest_id_map = self.manifest_id_map
+        for i, item in enumerate(self.opf_xpath('//opf:spine/opf:itemref[@idref]')):
+            idref = item.get('idref')
+            q = manifest_id_map.get(idref, None)
+            if q == name:
+                return i
+
     @property
     def spine_names(self):
         ''' An iterator yielding name and is_linear for every item in the
@@ -1288,6 +1296,10 @@ class EpubContainer(Container):
 
     def commit(self, outpath=None, keep_parsed=False):
         super(EpubContainer, self).commit(keep_parsed=keep_parsed)
+        container_path = join(self.root, 'META-INF', 'container.xml')
+        if not exists(container_path):
+            raise InvalidEpub('No META-INF/container.xml in EPUB, this typically happens if the temporary files calibre'
+                              ' is using are deleted by some other program while calibre is running')
         restore_fonts = {}
         for name in self.obfuscated_fonts:
             if name not in self.name_path_map:

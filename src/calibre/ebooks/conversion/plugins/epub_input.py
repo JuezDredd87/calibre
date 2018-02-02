@@ -80,14 +80,14 @@ class EPUBInput(InputFormatPlugin):
         return False
 
     def set_guide_type(self, opf, gtype, href=None, title=''):
-        # Set the titlepage guide entry
+        # Set the specified guide entry
         for elem in list(opf.iterguide()):
-            if elem.get('type', '').lower() == 'titlepage':
+            if elem.get('type', '').lower() == gtype:
                 elem.getparent().remove(elem)
 
         if href is not None:
             t = opf.create_guide_item(gtype, title, href)
-            for guide in opf.root.iterchildren('guide'):
+            for guide in opf.root.xpath('./*[local-name()="guide"]'):
                 guide.append(t)
                 return
             guide = opf.create_guide_element()
@@ -294,11 +294,22 @@ class EPUBInput(InputFormatPlugin):
         not_for_spine = set()
         for y in opf.itermanifest():
             id_ = y.get('id', None)
-            if id_ and y.get('media-type', None) in {
-                    'application/vnd.adobe-page-template+xml', 'application/vnd.adobe.page-template+xml',
-                    'application/adobe-page-template+xml', 'application/adobe.page-template+xml',
-                    'application/text'}:
-                not_for_spine.add(id_)
+            if id_:
+                mt = y.get('media-type', None)
+                if mt in {
+                        'application/vnd.adobe-page-template+xml',
+                        'application/vnd.adobe.page-template+xml',
+                        'application/adobe-page-template+xml',
+                        'application/adobe.page-template+xml',
+                        'application/text'
+                }:
+                    not_for_spine.add(id_)
+                ext = y.get('href', '').rpartition('.')[-1].lower()
+                if mt == 'text/plain' and ext in {'otf', 'ttf'}:
+                    # some epub authoring software sets font mime types to
+                    # text/plain
+                    not_for_spine.add(id_)
+                    y.set('media-type', 'application/font')
 
         seen = set()
         for x in list(opf.iterspine()):

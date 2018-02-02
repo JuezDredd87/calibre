@@ -709,7 +709,6 @@ from calibre.devices.jetbook.driver import (JETBOOK, MIBUK, JETBOOK_MINI,
         JETBOOK_COLOR)
 from calibre.devices.kindle.driver import (KINDLE, KINDLE2, KINDLE_DX,
         KINDLE_FIRE)
-from calibre.devices.apple.driver import ITUNES
 from calibre.devices.nook.driver import NOOK, NOOK_COLOR
 from calibre.devices.prs505.driver import PRS505
 from calibre.devices.prst1.driver import PRST1
@@ -801,7 +800,6 @@ plugins += [
     NEXTBOOK,
     ADAM,
     MOOVYBOOK, COBY, EX124G, WAYTEQ, WOXTER, POCKETBOOK626, SONYDPTS1,
-    ITUNES,
     BOEYE_BEX,
     BOEYE_BDX,
     MTP_DEVICE,
@@ -949,7 +947,7 @@ class ActionSendToDevice(InterfaceActionBase):
 class ActionConnectShare(InterfaceActionBase):
     name = 'Connect Share'
     actual_plugin = 'calibre.gui2.actions.device:ConnectShareAction'
-    description = _('Send books via email or the web. Also connect to iTunes or'
+    description = _('Send books via email or the web. Also connect to'
             ' folders on your computer as if they are devices')
 
 
@@ -1119,7 +1117,7 @@ class Columns(PreferencesPlugin):
 class Toolbar(PreferencesPlugin):
     name = 'Toolbar'
     icon = I('wizard.png')
-    gui_name = _('Toolbars')
+    gui_name = _('Toolbars & menus')
     category = 'Interface'
     gui_category = _('Interface')
     category_order = 1
@@ -1517,18 +1515,6 @@ class StoreBiblioStore(StoreBase):
     formats = ['EPUB, PDF']
 
 
-class StoreCdpStore(StoreBase):
-    name = 'Cdp.pl'
-    author = u'Tomasz Długosz'
-    description = u'E-booki w wielu formatach zabezpieczone znakiem wodnym RuneMark'
-    actual_plugin = 'calibre.gui2.store.stores.cdp_plugin:CdpStore'
-
-    drm_free_only = True
-    headquarters = 'PL'
-    formats = ['EPUB', 'MOBI', 'PDF']
-    affiliate = True
-
-
 class StoreChitankaStore(StoreBase):
     name = u'Моята библиотека'
     author = 'Alex Stanev'
@@ -1649,18 +1635,6 @@ class StoreKoboStore(StoreBase):
 
     headquarters = 'CA'
     formats = ['EPUB']
-    affiliate = True
-
-
-class StoreKoobeStore(StoreBase):
-    name = 'Koobe'
-    author = u'Tomasz Długosz'
-    description = u'Księgarnia internetowa oferuje ebooki (książki elektroniczne) w postaci plików epub, mobi i pdf.'
-    actual_plugin = 'calibre.gui2.store.stores.koobe_plugin:KoobeStore'
-
-    drm_free_only = True
-    headquarters = 'PL'
-    formats = ['EPUB', 'MOBI', 'PDF']
     affiliate = True
 
 
@@ -1804,6 +1778,18 @@ class StoreSmashwordsStore(StoreBase):
     affiliate = True
 
 
+class StoreSwiatEbookowStore(StoreBase):
+    name = u'Świat Ebooków'
+    author = u'Tomasz Długosz'
+    description = u'Ebooki maje tę zaletę, że są zawsze i wszędzie tam, gdzie tylko nas dopadnie ochota na czytanie.'
+    actual_plugin = 'calibre.gui2.store.stores.swiatebookow_plugin:SwiatEbookowStore'
+
+    drm_free_only = True
+    headquarters = 'PL'
+    formats = ['EPUB', 'MOBI', 'PDF']
+    affiliate = True
+
+
 class StoreVirtualoStore(StoreBase):
     name = 'Virtualo'
     author = u'Tomasz Długosz'
@@ -1883,7 +1869,6 @@ plugins += [
     StoreBeamEBooksDEStore,
     StoreBiblioStore,
     StoreChitankaStore,
-    StoreCdpStore,
     StoreEbookNLStore,
     StoreEbookpointStore,
     StoreEbookscomStore,
@@ -1894,7 +1879,6 @@ plugins += [
     StoreGoogleBooksStore,
     StoreGutenbergStore,
     StoreKoboStore,
-    StoreKoobeStore,
     StoreLegimiStore,
     StoreLibreDEStore,
     StoreLitResStore,
@@ -1908,6 +1892,7 @@ plugins += [
     StorePublioStore,
     StoreRW2010Store,
     StoreSmashwordsStore,
+    StoreSwiatEbookowStore,
     StoreVirtualoStore,
     StoreWeightlessBooksStore,
     StoreWHSmithUKStore,

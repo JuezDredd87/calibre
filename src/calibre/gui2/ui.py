@@ -87,11 +87,8 @@ class Listener(Thread):  # {{{
 # }}}
 
 
-_gui = None
-
-
 def get_gui():
-    return _gui
+    return getattr(get_gui, 'ans', None)
 
 
 def add_quick_start_guide(library_view, refresh_cover_browser=None):
@@ -138,7 +135,6 @@ class Main(MainWindow, MainWindowMixin, DeviceMixin, EmailMixin,  # {{{
     shutting_down = False
 
     def __init__(self, opts, parent=None, gui_debug=None):
-        global _gui
         MainWindow.__init__(self, opts, parent=parent, disable_automatic_gc=True)
         self.setWindowIcon(QApplication.instance().windowIcon())
         self.jobs_pointer = Pointer(self)
@@ -147,7 +143,7 @@ class Main(MainWindow, MainWindowMixin, DeviceMixin, EmailMixin,  # {{{
         self.proceed_question = ProceedQuestion(self)
         self.job_error_dialog = JobError(self)
         self.keyboard = Manager(self)
-        _gui = self
+        get_gui.ans = self
         self.opts = opts
         self.device_connected = None
         self.gui_debug = gui_debug
@@ -275,7 +271,7 @@ class Main(MainWindow, MainWindowMixin, DeviceMixin, EmailMixin,  # {{{
         if self.system_tray_icon is not None:
             self.system_tray_icon.setIcon(QIcon(I('lt.png', allow_user_override=False)))
             if not (iswindows or isosx):
-                self.system_tray_icon.setIcon(QIcon.fromTheme('calibre-gui', self.system_tray_icon.icon()))
+                self.system_tray_icon.setIcon(QIcon.fromTheme('calibre-tray', self.system_tray_icon.icon()))
             self.system_tray_icon.setToolTip(self.jobs_button.tray_tooltip())
             self.system_tray_icon.setVisible(True)
             self.jobs_button.tray_tooltip_updated.connect(self.system_tray_icon.setToolTip)

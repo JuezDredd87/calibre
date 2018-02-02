@@ -5,8 +5,8 @@
 # for important features/bug fixes.
 # Also, each release can have new and improved recipes.
 
-# - version: ?.?.?
-#   date: 2017-??-??
+# - version: 3.?.?
+#   date: 2018-??-??
 #
 #   new features:
 #     - title:
@@ -19,6 +19,335 @@
 #
 #   new recipes:
 #     - title:
+
+- version: 3.16.0
+  date: 2018-01-26
+
+  new features:
+    - title: "Content server: Allow adding and deleting of books using the web interface"
+      type: major
+      description: "Use the + icon in the top bar of the book list to add new books and the trash icon in the top bar of the book details page to a delete a book. Note that only authenticated users are allowed to perform these actions, so you have to setup user accounts for the server to use these features."
+
+    - title: "Allow removing the close button from tabs in the Virtual library tab bar. Right click the tab bar and choose 'Lock tabs' to do that."
+
+    - title: "calibredb export: Add --progress option"
+
+    - title: "Bulk metadata editing: Show progress bars to track progress of the operation"
+
+    - title: "Content server: When downloading books from the server send both the ASCII and full Unicode file names. Browsers that support RFC 6266 can make use of the unicode file name."
+
+    - title: "Content server: Show a warning popup on Apple devices when the user tries to search with an expression containing smart quotes, since Apple devices now automatically replace quotes with smart quotes when typing."
+
+  bug fixes:
+    - title: "DOCX Output: Fix links without anchors in the input document not being converted correctly."
+      tickets: [1741098]
+
+    - title: "calibredb: Fix a regression that broke reading of passwords from stdin"
+
+    - title: "Edit book: Fix an error when saving files with filenames that cannot be encoded using the system codepage on Windows"
+
+    - title: "Pasting metadata: Fix excluding title and authors not working"
+
+  improved recipes:
+    - The Galaxy's Edge
+    - Orange County Register
+    - Danas
+
+  new recipes:
+    - title: Revista Veintitres
+      author: Darko Miletic
+
+    - title: Cronica
+      author: Darko Miletic
+
+- version: 3.15.0
+  date: 2018-01-05
+
+  new features:
+    - title: "Browser viewer: Allow customizing what information is displayed in the header and footer areas. Access Preferences from the viewer controls to change."
+
+    - title: "Add support for MTP devices on FreeBSD"
+
+    - title: "ToC editor: Add more case changing operations to the right click menu"
+
+    - title: "Content server: Redirect pre 2.x book URLs to new 3.x URLs via a JavaScript redirect"
+
+    - title: "Content server: Allow opening entries in the book list in a new tab via middle click/right click"
+
+    - title: "Add a tweak in Preferences->Tweaks to exclude some fields when using the Edit metadata->Copy/paste actions"
+
+    - title: "Linux: Allow using calibre-tray.png in the calibre resources folder to override the system tray icon."
+      tickets: [1738518]
+
+  bug fixes:
+    - title: "Browser viewer: Fix goto next/previous section actions not working when the sections are in different individual HTML files."
+      tickets: [1740333]
+
+    - title: "Edit book/Book polishing: When compressing images and the compressed image is larger thant he original, use the original image."
+      tickets: [1741063]
+
+    - title: "PDF input: Fix conversion of multi-level PDF Outline causing duplicate entries in the Table of Contents."
+      tickets: [1738385]
+
+    - title: "Edit book: Fix incorrect EPUB 3 declarations being added to the OPF file when adding covers to an EPUB 2 book"
+
+    - title: "Edit book: Fix backspace key un-indenting instead of deleting even when text is selected if the cursor is at the start of the line"
+
+    - title: "Tag browser: Fix position not being preserved when deleting books."
+      tickets: [1740387]
+
+    - title: "Edit Book: Use the cache directory rather than the temp directory to store working files. Hopefully prevents temp file cleaners from destroying books."
+      tickets: [1740460]
+
+    - title: "EPUB input: Handle books that erroneously set the mimetype for font files to text/plain"
+
+    - title: "AZW3 input: Do not fail to process files with invalid internal flow references."
+      tickets: [1740140]
+
+    - title: "When updating plugins, do not show the dialog asking which toolbar to put the plugin, even if the user has removed the plugin for all toolbars."
+
+    - title: "Content server: Fix using the Clear logs button preventing the server from restarting until calibre itself is restarted."
+      tickets: [1738433]
+
+  improved recipes:
+    - LA Times
+    - Popular Science
+    - Nikkei News
+
+
+- version: 3.14.0
+  date: 2017-12-15
+
+  new features:
+    - title: "User manual: A new quick reference primer for regular expression syntax https://manual.calibre-ebook.com/regexp_quick_reference.html"
+
+    - title: "Content server: Allow viewing the book metadata while reading a book. In the viewer controls, tap Goto and then Metadata to see the metadata."
+      tickets: [1736312]
+
+    - title: "Kobo driver: Add support for new firmware"
+
+    - title: "Bulk metadata edit: Allow choosing the algorithm used for changing the case of titles"
+
+    - title: "Get books: The koobe.pl store plugin has now become the Swiat Ebookow store plugin"
+
+    - title: "Allow Copy/paste of book metadata from the main book list. Right click the Edit metadata button to access these actions."
+
+    - title: "Allow disabling the confirmation popup when opening the containing folder of many books at once."
+      tickets: [1735862]
+
+  bug fixes:
+    - title: "Nook driver: Fix books sent via calibre not appearing under My Files on the Glowlight 3 Plus"
+
+    - title: "Get Books: Update Mills & Boon, publio, empik, legimi, woblink and beam-ebooks.de plugins for website changes"
+
+    - title: "Book polishing: Do not scan book for font usage when subsetting if no embedded fonts are available."
+      tickets: [1737400]
+
+    - title: "Content server: Open links in the comments section from the book details page in new windows."
+      tickets: [1737644]
+
+    - title: "Choose English as the User interface language when a locale related environment variable is set to the C locale"
+
+    - title: "Linux installer: A nicer error message if the user tries to run the installer on an ARM machine"
+
+  improved recipes:
+    - Boston Globe
+    - The Times
+    - Economist
+
+  new recipes:
+    - title: El Cohete a la luna
+      author: Darko Miletic
+
+- version: 3.13.0
+  date: 2017-12-01
+
+  new features:
+    - title: "Driver for the new Bq Cervantes 4"
+
+    - title: "Edit book: Auto-generate links to existing stylesheets when adding a new HTML file."
+      tickets: [1733845]
+
+    - title: "Add a button to easily clear server logs in Preferences->Sharing over the net->Show server logs."
+      tickets: [1730046]
+
+    - title: "Catalog generation: Store the list of fields to be used in generating CSV/XML catalogs per library."
+      tickets: [1730500]
+
+    - title: "Bulk metadata edit: Make the custom series controls similar to the builtin series ones, with the same set of features"
+
+    - title: "Edit book: Pre-select existing cover image (if any) in add cover dialog"
+
+    - title: "Make the Manage saved searches dialog a little easier for new users."
+      tickets: [1733163]
+
+    - title: "Add a tweak to control behavior of Enter on the book list"
+
+    - title: "Content server: Fix random book button on book details page multiplying."
+      tickets: [1732493]
+
+    - title: "Edit Book: Bulk file rename dialog: Remember last used prefix for renaming files"
+
+  bug fixes:
+    - title: "Tag browser: Fix use of the tweak to control order of items in the Tag browser causing unexpected expansion of items after editing metadata."
+      tickets: [1730245]
+
+    - title: "Content server: Improve rendering of tags/categories with long words on small screens."
+      tickets: [1734119]
+
+    - title: "Fix first added saved search not appearing in Tag browser until calibre restart."
+      tickets: [1733151]
+
+    - title: "When checking added books for duplicates, also check on the language field. So books with the same title/authors but different languages are not considered duplicates."
+
+    - title: "Edit Book: Spell check should not fail if there are non-HTML files in the spine"
+
+    - title: "Conversion: Fix an error when using the embed_all_fonts option with certain books"
+
+    - title: "Save to disk: Dont error out if the user deletes all formats to be saved."
+
+    - title: "Linux binary: Fix calibre not starting on systems where QT_QPA_PLATFORM is set to use wayland"
+
+  improved recipes:
+    - The Economist
+    - The Walrun Magazine
+    - China Daily
+    - Telepolis
+
+  new recipes:
+    - title: Various Russian news source
+      author: bugmen00t
+
+
+- version: 3.12.0
+  date: 2017-11-09
+
+  new features:
+    - title: "Driver for the new Nook Glowlight 3"
+      tickets: [1731024]
+
+    - title: "Allow configuring the metadata fields displayed in the pop-up Book details window. To configure, simply click the 'Configure' link at the bottom of the window."
+
+    - title: "Wireless driver: Allow specifying extra file formats (unknown to calibre) to send"
+
+  bug fixes:
+    - title: "Fix a regression that caused clicking the clear button in the main search bar to not unapply the current search until enter is pressed."
+
+    - title: "Linux: Fix a regression causing calibre to fail to start on systems with no DBUS session bus"
+
+    - title: "Browser viewer: Fix body font being forced to sans-serif, overriding in book and user stylesheet settings"
+
+    - title: "Fix sending email failing of the computer's FQDN is set to a single period."
+      tickets: [1730166]
+
+  improved recipes:
+    - New Yorker
+    - Geopolityka
+
+
+- version: 3.11.1
+  date: 2017-11-02
+
+  new features:
+    - title: "Kindle driver: Add support for the new Kindle Oasis"
+
+    - title: "Browser viewer: Allow the user to specify a CSS style sheet to control the look and feel of the text"
+
+    - title: "Edit book spell check: In the list of suggestions show the original word in italics."
+      tickets: [1727827]
+
+    - title: "Edit Book: When adding a new HTML file, add it after the file being currently edited instead of at the end."
+      tickets: [1728601]
+
+    - title: "Column coloring: Add a contains rule type."
+      tickets: [1728464]
+
+    - title: "Book details panel: Allow saving the displayed cover to disk via the right click context menu."
+      tickets: [1728251]
+
+  bug fixes:
+    - title: "Browser viewer: Fix font size and color scheme settings not being respected in the footnote popup"
+
+    - title: "DOCX Output: Fix comments/XML processing instructions in the middle of text causing text to be skipped."
+      tickets: [1727599]
+
+    - title: "Book details panel: Fix metadata field titles not being top aligned"
+
+    - title: "Linux: Fix long startup delay on systems that do not have a desktop notification service running"
+
+    - title: "3.11.1 fixes a couple of regression in 3.11.0 that broke configuring Get books and creating catalogs"
+
+  improved recipes:
+    - Financial Times
+    - computerworld.pl
+    - Tulsa World
+    - Science Daily
+    - El Mundo
+
+- version: 3.10.0
+  date: 2017-10-20
+
+  new features:
+    - title: "Browser viewer: Show footnotes in a popup window. Similar to the popup footnote functionality in the calibre viewer."
+      type: major
+
+    - title: "Content server: Add an option to control the timeout for making AJAX queries to the server."
+      tickets: [1722016]
+
+  bug fixes:
+    - title: "Fix regression that broke Preferences->Conversion->Common options in version 3.9"
+
+    - title: "Server: Fix adding expressions to the search always using AND instead of respecting the setting to use OR or AND."
+      tickets: [1724405]
+
+    - title: "Browser viewer: Fix a regression that caused loading more than one book in the same session or using the back/forward browser buttons to require refreshing the browser."
+
+    - title: "Jobs list: Fix killing of job killing the wrong job if other jobs are completed while waiting for kill confirmation."
+
+    - title: "DOCX Output: Fix preserve cover aspect ratio option still distorting the aspect ratio slightly."
+      tickets: [1721864]
+
+  improved recipes:
+    - Lomza
+    - Go Comics
+    - Various Polish news sources
+
+- version: 3.9.0
+  date: 2017-10-06
+
+  new features:
+    - title: "Remove the Connect to iTunes function since Apple has removed that functionality from iTunes"
+      description: "Now you have to use one of the wireless connection methods to connect to an iPad/iPhone, as described at: https://manual.calibre-ebook.com/faq.html#how-do-i-use-calibre-with-my-ipad-iphone-ipod-touch"
+
+    - title: "Kobo driver: Support for new firmware"
+
+    - title: "Allow changing the icons in yes/no columns via column icon rules."
+      tickets: [1721374]
+
+    - title: 'Quickview panel: Add a context menu with a "View" action to the book table.'
+
+    - title: "Make the elapsed time display in the jobs dialog more human friendly."
+      tickets: [1719059]
+
+  bug fixes:
+    - title: "EPUB Input: Fix styles in existing titlepage not being flattened when the titlepage is preserved during conversion."
+      tickets: [1720715]
+
+    - title: "Fix conversion of grayscale JPEG-XR images not working"
+      tickets: [1720638]
+
+    - title: "Update the douban metadata download plugin to match changes to the website"
+
+    - title: "DOCX Output: Fix the preserve cover aspect ratio option not visible"
+      tickets: [1719026]
+
+  improved recipes:
+    - Respekt Magazine
+    - Associated Press
+    - Heraldo de Aragon
+    - El Correo
+    - El Periodico de Aragon
+    - A List Apart
 
 - version: 3.8.0
   date: 2017-09-22
@@ -3220,7 +3549,7 @@
   date: 2015-01-30
 
   new features:
-    - title: "Edit book: Add 'Style Classes' and 'Links' report pages to the Reports tool"
+    - title: "Edit book: Add 'Style classes' and 'Links' report pages to the Reports tool"
 
     - title: "Tag browser: Allow expanding all children of a node by right clicking and choosing 'Expand all'"
       tickets: [1414315]
